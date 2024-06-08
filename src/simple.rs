@@ -1,5 +1,4 @@
 use core::alloc::{GlobalAlloc, Layout};
-use core::ptr;
 use sync::spin::Spinlock;
 
 pub struct SimpleAllocator {
@@ -22,6 +21,7 @@ unsafe impl GlobalAlloc for SimpleAllocator {
         let mem_start = self.memory.as_ptr() as usize;
 
         let start = (*offset + mem_start + layout.align() - 1) & !(layout.align() - 1);
+        let start = (start + layout.size() - 1) & !(layout.size() - 1);
         let start = start - mem_start;
         let end = start + layout.size();
         *offset = end;
